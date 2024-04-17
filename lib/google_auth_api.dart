@@ -3,13 +3,12 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:test/model.dart';
 
 // const clientId = '506132801757-6j4ce5noo1po91j1r68eoq6dp0kqgag5.apps.googleusercontent.com';
 
 const clientId =
-    '506132801757-guitla7d7odcao08n23ilgkm3v207bkh.apps.googleusercontent.com';
-
-
+    '';
 
 // serverAuthCode/idToken will be generated only if I use web client id.
 
@@ -25,7 +24,8 @@ class GoogleAuthApi {
     ],
   );
 
-  Future<void> signUp() async {
+  Future<UserModel> signUp() async {
+    late UserModel res;
     try {
       _googleSignIn.signOut();
       debugPrint('-------------STARTING SIGNING IN ');
@@ -36,36 +36,45 @@ class GoogleAuthApi {
       final GoogleSignInAuthentication googleUserAuthentication =
           await googleUser!.authentication;
 
-
       debugPrint('-----------------${googleUser.serverAuthCode}\n');
 
       debugPrint('-----------------${googleUserAuthentication.accessToken}\n');
-      debugPrint('-----------------${googleUserAuthentication.idToken}\n');
+      debugPrint('-----------------${googleUserAuthentication.idToken}\n\n\n');
 
-      await _handleLogin(
+      final userData = await _handleLogin(
         googleUserAuthentication.idToken!,
       );
+      //
+      debugPrint('-------------------FINAL DATA Map<String, String> : $userData');
+      res = UserModel.fromJson(userData['data']['data']);
     } on Exception catch (e) {
       // Handle exceptions gracefully (e.g., show a snackbar)
       debugPrint('Error signing in: $e');
     }
+
+    return res;
   }
 
-  Future<dynamic> _handleLogin(String accessToken) async {
-
+  Future<dynamic> _handleLogin(String idToken) async {
     try {
       final response = await http.post(
-        Uri.parse('https://analytics.mantispro.app:5100/api/v1/users/auth/google'),
+        Uri.parse(
+            ''),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": 'application/json',
         },
         body: jsonEncode({
-          'token': accessToken,
+          "token": idToken,
         }),
       );
 
       debugPrint('${response.statusCode}');
       debugPrint(response.body);
+      final res = jsonDecode(response.body);
+      // debugPrint('----------TOKEN : ${res['token']}');
+      //
+      final userData = await _getUserData(res['token']);
+      return userData;
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -80,17 +89,15 @@ class GoogleAuthApi {
     //   await prefs.setString('token', response.body);
 
     //   // Make the second API request to retrieve user data
-    //   final userData = await _getUserData(response.body);
-    // return userData;
+    //
     // } else {
     //   // Handle login failure (e.g., show an error message)
     //   debugPrint('Login failed: ${response.statusCode}');
     // }
   }
 
-  Future<void> _getUserData(String token) async {
+  Future<dynamic> _getUserData(String token) async {
     final headers = {
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
 
@@ -103,8 +110,8 @@ class GoogleAuthApi {
 
     if (userDataResponse.statusCode == 200) {
       // Handle successful user data retrieval
-      debugPrint('User data retrieved successfully!');
-      debugPrint(userDataResponse.body);
+      debugPrint('\n\n\nUser data retrieved successfully!');
+      // debugPrint(userDataResponse.body);
 
       // Process the user data as needed
       final userData = jsonDecode(userDataResponse.body);

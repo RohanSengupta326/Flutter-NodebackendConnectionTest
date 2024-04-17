@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:test/google_auth_api.dart';
 
+import 'logged_in_page.dart';
+import 'model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -64,9 +66,14 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ElevatedButton(
               onPressed: () async {
                 // functio to call google signup
-                await googleAuthApi.signUp();
-                // Navigator.of(context).pushReplacement(
-                //     MaterialPageRoute(builder: (ctx) => LoggedInPage(userData)));
+                final UserModel userData = await googleAuthApi.signUp();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (ctx) => LoggedInPage(
+                      userData: userData,
+                    ),
+                  ),
+                );
               },
               style: ButtonStyle(
                 elevation: const MaterialStatePropertyAll(0),
