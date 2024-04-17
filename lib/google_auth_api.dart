@@ -9,10 +9,9 @@ import 'package:http/http.dart' as http;
 const clientId =
     '506132801757-guitla7d7odcao08n23ilgkm3v207bkh.apps.googleusercontent.com';
 
-// for idToken to not be null, we have use clientId as web client id then only idToken won't be null.
 
-// serverAuthCode/idToken will be generated only if I use web client id. openid scopes is required
-// get serverAuthCode too.
+
+// serverAuthCode/idToken will be generated only if I use web client id.
 
 class GoogleAuthApi {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -20,9 +19,9 @@ class GoogleAuthApi {
     scopes: [
       'email',
       'profile',
-      'https://www.googleapis.com/auth/userinfo.email',
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'openid',
+      // 'https://www.googleapis.com/auth/userinfo.email',
+      // 'https://www.googleapis.com/auth/userinfo.profile',
+      // 'openid',
     ],
   );
 
