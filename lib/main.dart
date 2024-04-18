@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/google_auth_api.dart';
+import 'package:test/publicKeyFetch.dart';
 
 import 'logged_in_page.dart';
 import 'model.dart';
@@ -37,7 +39,23 @@ class _MyHomePageState extends State<MyHomePage> {
   GoogleAuthApi googleAuthApi = GoogleAuthApi();
   bool isLoaded = false;
 
-  UserModel userData = UserModel(name: 'name', email: 'email', id: 'id');
+  UserModel userData = UserModel.empty();
+  String publicKey = '';
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setPublicKey();
+  }
+
+  void setPublicKey() async{
+    publicKey = await fetchPublicKeyFromServer();
+    SharedPreferences prefs = await  SharedPreferences.getInstance();
+    prefs.setString('publicKey', publicKey);
+  }
 
   @override
   Widget build(BuildContext context) {

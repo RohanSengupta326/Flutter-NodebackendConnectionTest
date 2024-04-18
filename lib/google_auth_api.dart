@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:test/consts.dart';
 import 'package:test/model.dart';
+import 'package:test/publicKeyFetch.dart';
 
 // const clientId = '506132801757-6j4ce5noo1po91j1r68eoq6dp0kqgag5.apps.googleusercontent.com';
 
@@ -28,7 +29,10 @@ class GoogleAuthApi {
   );
 
   Future<UserModel> signUp() async {
-    late UserModel res;
+    prefs = await SharedPreferences.getInstance();
+    final publicKey = prefs.getString('publicKey') ?? '';
+
+    UserModel res = UserModel.empty();
     try {
       _googleSignIn.signOut();
       debugPrint('-------------STARTING SIGNING IN ');
@@ -44,13 +48,21 @@ class GoogleAuthApi {
       debugPrint('-----------------${googleUserAuthentication.accessToken}\n');
       debugPrint('-----------------${googleUserAuthentication.idToken}\n\n\n');
 
-      final userData = await _handleLogin(
-        googleUserAuthentication.idToken!,
-      );
-      //
+      // encrypt idToken.
+      final encryptedToken = await encryptIdToken(
+          googleUserAuthentication.idToken ?? '', publicKey);
+
       debugPrint(
-          '-------------------FINAL DATA Map<String, String> : $userData');
-      res = UserModel.fromJson(userData['data']['data']);
+          '-------------------Cypher Token : ${encryptedToken.toString()}');
+
+      // final userData = await _handleLogin(
+      //   googleUserAuthentication.idToken!,
+      // );
+      //
+
+      // debugPrint(
+      //     '-------------------FINAL DATA Map<String, String> : $userData');
+      // res = UserModel.fromJson(userData['data']['data']);
     } on Exception catch (e) {
       // Handle exceptions gracefully (e.g., show a snackbar)
       debugPrint('Error signing in: $e');
@@ -60,8 +72,6 @@ class GoogleAuthApi {
   }
 
   Future<dynamic> _handleLogin(String idToken) async {
-    prefs = await SharedPreferences.getInstance();
-
     try {
       final response = await http.post(
         Uri.parse(authUrl),
