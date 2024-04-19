@@ -50,14 +50,16 @@ class GoogleAuthApi {
 
       // encrypt idToken.
       final encryptedToken = await encryptIdToken(
-          googleUserAuthentication.idToken ?? '', publicKey);
+          googleUserAuthentication.idToken!,
+          // 'You bought a High-End Gamepad, but it doesn’t actually work with 99% of Android Games, right?',
+          publicKey);
 
       debugPrint(
           '-------------------Cypher Token : ${encryptedToken.toString()}');
 
-      // final userData = await _handleLogin(
-      //   googleUserAuthentication.idToken!,
-      // );
+      final userData = await _handleLogin(
+        encryptedToken.toString(),
+      );
       //
 
       // debugPrint(

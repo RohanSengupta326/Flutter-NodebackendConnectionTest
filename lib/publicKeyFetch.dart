@@ -7,11 +7,18 @@ import 'package:fast_rsa/fast_rsa.dart';
 Future<String> fetchPublicKeyFromServer() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  final keyPair = await RSA.generate(2048);
+  final keyPair = await RSA.generate(4096);
   final publicKey = keyPair.publicKey;
   debugPrint('---------------------Generated Public key : $publicKey');
+  debugPrint('---------------------Private key : ${keyPair.privateKey}');
 
-  await prefs.setString('public_key', publicKey);
+  // await prefs.setString('public_key', publicKey);
+
+
+  //
+  // final publicKey = prefs.getString('public_key') ?? '';
+  //
+  // debugPrint('-------------------Local public key : $publicKey');
   return publicKey;
 }
 
