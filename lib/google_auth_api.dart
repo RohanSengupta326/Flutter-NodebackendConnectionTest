@@ -150,13 +150,11 @@ class GoogleAuthApi {
       debugPrint('----------Received TOKEN from server : ${res['token']}');
       //
       await prefs.setString('token', res['token']);
-      debugPrint(
-          '------------------Locally saved TOKEN :  ${prefs.getString('token')}');
     } catch (e) {
       debugPrint(e.toString());
     }
 
-    return statusCodeInteger ;
+    return statusCodeInteger;
   }
 
   // Future<void> _handleEncryptedChunksLogin(List<String> eChunks) async {
@@ -234,8 +232,9 @@ class GoogleAuthApi {
 
   Future<UserModel> getUserData() async {
     String localToken = prefs.getString('token') ?? '';
+    debugPrint('------------------Locally saved Received TOKEN :  $localToken');
 
-    if (localToken == null) throw Exception();
+    if (localToken == '') throw Exception();
 
     final headers = {
       'Authorization': 'Bearer $localToken',
@@ -264,6 +263,7 @@ class GoogleAuthApi {
             'User data retrieval failed: ${userDataResponse.statusCode}');
       }
     } catch (e) {
+      debugPrint('------------------Error : $e ');
       rethrow;
     }
 

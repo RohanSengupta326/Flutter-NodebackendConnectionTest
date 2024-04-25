@@ -93,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ElevatedButton(
               onPressed: () async {
                 userData = await googleAuthApi.getUserData();
+                debugPrint('------------------Received User Data : ${userData.email}');
 
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(

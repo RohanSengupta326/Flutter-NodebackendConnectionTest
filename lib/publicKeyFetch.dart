@@ -178,8 +178,13 @@ String encryptData(Uint8List dataBytes, String publicKey) {
     var exponent = topLevelSeq.elements[1] as ASN1Integer;
 
     // Create a cipher instance using RSA with OAEP padding
-    final cipher = OAEPEncoding(RSAEngine())
-      ..init(
+    // final digest = SHA256Digest();
+    // final mgf1 = MaskedGenParameter(digest);
+    // final oaepParams = OAEPEncodingParameters(digest, mgf1, null);
+
+    final cipher = OAEPEncoding(
+      RSAEngine(),
+    )..init(
         true, // true for encryption
         PublicKeyParameter<RSAPublicKey>(
           RSAPublicKey(
