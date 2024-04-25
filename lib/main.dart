@@ -42,19 +42,21 @@ class _MyHomePageState extends State<MyHomePage> {
   UserModel userData = UserModel.empty();
   String publicKey = '';
 
-
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    setPublicKey();
+    // setPublicKey();
   }
 
-  void setPublicKey() async{
-    publicKey = await fetchPublicKeyFromServer();
-    SharedPreferences prefs = await  SharedPreferences.getInstance();
-    prefs.setString('publicKey', publicKey);
+  void setPublicKey() async {
+    // String publicKey = generateKeyPair();
+    String publicKey =
+        "MIIBCgKCAQEA4kB4sTqHMSI7BmfYe1e4ag7gwEpIxxAFi/w6lxFSdxwV90iKkay8Pe6jlv6Z9ziTqfMm3uvF8gF2ytAQn5JPQ9eUGlbdYaaKudy4p7nHdIcEcoARLA16zWyBNXiK3xYonVAW/zJNGA6i6F1Y1+QiUbklpoHVbhIYFs3t/uEqDyfw2W/S4tS5Zekhdw3MYHyJHd+Bf8cdfmcPl5Wj/S4kXbX7NyaRYvMURcYTnH4IiLIHr22dLjfXDrDD0Eptv5+cbdA20YVmsH9bkm0RjLkPtfpwyaoxAfGq1ajNd1BE53IAMv+WZ7ZECEcjUKjKxapPqh0eRdRfUOtLiewv3fkgpQIDAQAB";
+    // String pemPublicKey = extractBase64FromPem(publicKey);
+    // debugPrint('----------------pemPublicKey : $pemPublicKey\n\n');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('pemPublicKey', publicKey);
   }
 
   @override
@@ -90,6 +92,8 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 500,
             child: ElevatedButton(
               onPressed: () async {
+                userData = await googleAuthApi.getUserData();
+
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (ctx) => LoggedInPage(
@@ -146,12 +150,28 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ElevatedButton(
             onPressed: () async {
               // function to call google signup
-              userData = await googleAuthApi.signUp();
+              final statusCode = await googleAuthApi.signUp();
+
+              if (statusCode == 200) {
+                setState(() {
+                  isLoaded = true;
+                });
+              } else {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Something Went Wrong!',
+                    ),
+                    duration: Duration(seconds: 5),
+                  ),
+                );
+              }
 
               //
-              setState(() {
-                userData.name != 'name' ? isLoaded = true : isLoaded = false;
-              });
+              // setState(() {
+              //   userData.name != 'name' ? isLoaded = true : isLoaded = false;
+              // });
             },
             style: ButtonStyle(
               elevation: const MaterialStatePropertyAll(0),
@@ -160,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              backgroundColor: MaterialStatePropertyAll(Colors.white),
+              backgroundColor: const MaterialStatePropertyAll(Colors.white),
             ),
             child: RichText(
               text: TextSpan(
