@@ -48,11 +48,12 @@ class GoogleAuthApi {
   //   return chunks;
   // }
 
-
+  // ---***---
   // To get User's system locale, system language , and android unique id :
 
   // https://gemini.google.com/app/bf1f56f7eb8f6fbd
   // android unique id : https://stackoverflow.com/questions/45031499/how-to-get-unique-device-id-in-flutter
+  // ---***---
 
   Future<int> signUp() async {
     prefs = await SharedPreferences.getInstance();
