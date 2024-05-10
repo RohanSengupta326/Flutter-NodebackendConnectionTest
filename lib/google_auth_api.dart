@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ui';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,8 +21,9 @@ Marvel has featured Spider-Man in several comic book series, the first and longe
 // const clientId = '506132801757-6j4ce5noo1po91j1r68eoq6dp0kqgag5.apps.googleusercontent.com';
 
 const clientId = webClientId;
-
-// serverAuthCode/idToken will be generated only if I use web client id.
+// serverAuthCode/idToken will be generated only if I use web client id. Not the android client id.
+// also I have to generate keystore.jks file to get the sha1 certificate, and then register it to
+// the cloud console.
 
 class GoogleAuthApi {
   late SharedPreferences prefs;
@@ -50,15 +53,33 @@ class GoogleAuthApi {
 
   // ---***---
   // To get User's system locale, system language , and android unique id :
-
   // https://gemini.google.com/app/bf1f56f7eb8f6fbd
   // android unique id : https://stackoverflow.com/questions/45031499/how-to-get-unique-device-id-in-flutter
   // ---***---
+  String getSystemLocale() {
+    final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+
+    String systemLanguageCode = systemLocale.languageCode;
+    // You can also access the country code (optional):
+    String? systemCountryCode = systemLocale.countryCode;
+
+    // Use the system language code for localization or other purposes
+    return '${systemLanguageCode}_$systemCountryCode';
+  }
+
+  Future<String> getUniqueAndroidId() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    // print('Running on ${androidInfo.model}'); // e.g. "Moto G (4)"
+
+    debugPrint('Running on ${androidInfo.id}'); //
+    return androidInfo.id;
+  }
 
   Future<int> signUp() async {
     prefs = await SharedPreferences.getInstance();
     final publicKey = prefs.getString('pemPublicKey') ?? '';
-    late int statusCode;
+    int statusCode = 400;
     debugPrint('--------------------Local Stored Public Key : $publicKey\n\n');
 
     try {
@@ -135,11 +156,24 @@ class GoogleAuthApi {
 
   Future<int> _handleEncryptedDataMapLogin(
       Map<String, String> encryptedDataMap) async {
+    // call func to get system locale, language and android unique id.
+    //
+    String systemLocale = getSystemLocale();
+    String androidUniqueId = await getUniqueAndroidId();
+
     //
     int statusCodeInteger = 400;
 
-    String jsonBody = jsonEncode(encryptedDataMap);
-    debugPrint('Sending encrypted json: $jsonBody');
+    // json encode other data too that are to be sent to the server.
+    // spread function ... , expands the already existing map with new data.
+    Map<String, String> combinedMap = {
+      ...encryptedDataMap,
+      'systemLocale': systemLocale,
+      'deviceUid': androidUniqueId,
+    };
+
+    String jsonBody = jsonEncode(combinedMap);
+    print('Sending encrypted json: $jsonBody');
 
     try {
       final response = await http.post(
