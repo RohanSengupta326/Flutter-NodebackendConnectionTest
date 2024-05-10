@@ -59,10 +59,6 @@ android {
     }
 
     signingConfigs {
-
-    }
-
-    signingConfigs {
         debug {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
