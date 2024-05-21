@@ -1,20 +1,27 @@
 class UserModel {
+  final String accountType;
   final String name;
   final String email;
-  final String id;
+  final String displayPicture;
 
-  UserModel({required this.name, required this.email, required this.id});
+  UserModel(
+      {required this.accountType,
+      required this.name,
+      required this.email,
+      required this.displayPicture});
 
   UserModel.empty()
-      : name = 'name',
+      : accountType = 'accountType',
+        name = 'name',
         email = 'email',
-        id = 'id';
+        displayPicture = '';
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      accountType: json['accountType'],
       name: json["name"],
       email: json["email"],
-      id: json["_id"],
+      displayPicture: json['displayPicture'],
     );
   }
 //

@@ -67,13 +67,14 @@ class GoogleAuthApi {
     return '${systemLanguageCode}_$systemCountryCode';
   }
 
-  Future<String> getUniqueAndroidId() async {
+  Future<List<String>> getUniqueAndroidId() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     // print('Running on ${androidInfo.model}'); // e.g. "Moto G (4)"
 
-    debugPrint('Running on ${androidInfo.id}'); //
-    return androidInfo.id;
+    debugPrint('Running on ${androidInfo.id}\n\n'); //
+    debugPrint('Running on ${androidInfo.model}');
+    return [androidInfo.id, androidInfo.model];
   }
 
   Future<int> signUp() async {
@@ -159,8 +160,9 @@ class GoogleAuthApi {
     // call func to get system locale, language and android unique id.
     //
     String systemLocale = getSystemLocale();
-    String androidUniqueId = await getUniqueAndroidId();
-
+    List<String> androidInfo = await getUniqueAndroidId();
+    debugPrint(
+        '--------------android id : ${androidInfo[0]} & \n android model : ${androidInfo[1]}');
     //
     int statusCodeInteger = 400;
 
@@ -169,7 +171,8 @@ class GoogleAuthApi {
     Map<String, String> combinedMap = {
       ...encryptedDataMap,
       'systemLocale': systemLocale,
-      'deviceUid': androidUniqueId,
+      'deviceUid': androidInfo[0],
+      'deviceModel': androidInfo[1],
     };
 
     String jsonBody = jsonEncode(combinedMap);
@@ -291,7 +294,7 @@ class GoogleAuthApi {
       if (userDataResponse.statusCode == 200) {
         // Handle successful user data retrieval
         debugPrint('\n\n\nUser data retrieved successfully!');
-        // debugPrint(userDataResponse.body);
+        debugPrint(userDataResponse.body);
 
         // Process the user data as needed
         final userData = jsonDecode(userDataResponse.body);

@@ -18,8 +18,8 @@ class LoggedInPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              backgroundImage: NetworkImage(''),
+            CircleAvatar(
+              backgroundImage: NetworkImage(userData.displayPicture),
             ),
             const SizedBox(
               height: 50,
@@ -40,7 +40,7 @@ class LoggedInPage extends StatelessWidget {
               ),
             ),
             Text(
-              userData.id,
+              userData.accountType,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
