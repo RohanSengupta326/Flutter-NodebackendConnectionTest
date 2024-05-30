@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/google_auth_api.dart';
 import 'package:test/publicKeyFetch.dart';
@@ -59,6 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
     prefs.setString('pemPublicKey', publicKey);
   }
 
+  void logOut(BuildContext context) {
+    GoogleSignIn().signOut();
+    debugPrint('-------------------- logged out');
+    // Navigator.of(context).pop();
+    setState(() {
+      isLoaded = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,12 +103,15 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ElevatedButton(
               onPressed: () async {
                 userData = await googleAuthApi.getUserData();
-                debugPrint('------------------Received User Data : ${userData.email}');
+                debugPrint(
+                    '------------------Received User Data : ${userData.email}');
 
-                Navigator.of(context).pushReplacement(
+                Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (ctx) => LoggedInPage(
+                    builder: (_) => LoggedInPage(
+                      logOut: logOut,
                       userData: userData,
+                      context: context,
                     ),
                   ),
                 );

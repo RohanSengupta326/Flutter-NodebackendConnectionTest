@@ -47,17 +47,17 @@ import 'package:pointycastle/export.dart';
 //       RegExp('.{1,64}'), (match) => "${match.group(0)}\n");
 // }
 
-String extractBase64FromPem(String pemKey) {
-  // Split the string into lines, remove lines containing PEM headers and footers, and concatenate.
-  return pemKey
-      .split('\n') // Split the string by new lines to process each line
-      .map((line) => line.trim()) // Trim whitespace from each line
-      .where((line) =>
-          line.isNotEmpty &&
-          !line.startsWith(
-              '-----')) // Filter out empty lines and lines with PEM headers/footers
-      .join(''); // Join the remaining lines back into a single string
-}
+// String extractBase64FromPem(String pemKey) {
+//   // Split the string into lines, remove lines containing PEM headers and footers, and concatenate.
+//   return pemKey
+//       .split('\n') // Split the string by new lines to process each line
+//       .map((line) => line.trim()) // Trim whitespace from each line
+//       .where((line) =>
+//           line.isNotEmpty &&
+//           !line.startsWith(
+//               '-----')) // Filter out empty lines and lines with PEM headers/footers
+//       .join(''); // Join the remaining lines back into a single string
+// }
 
 //
 // String generateKeyPair() {

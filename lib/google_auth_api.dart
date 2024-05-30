@@ -84,7 +84,7 @@ class GoogleAuthApi {
     debugPrint('--------------------Local Stored Public Key : $publicKey\n\n');
 
     try {
-      _googleSignIn.signOut();
+      // _googleSignIn.signOut();
       debugPrint('-------------STARTING SIGNING IN ');
 
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -280,6 +280,7 @@ class GoogleAuthApi {
 
     if (localToken == '') throw Exception();
 
+    // bearer token key : Authorisation are always the same key.
     final headers = {
       'Authorization': 'Bearer $localToken',
     };
